@@ -3,7 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DakarRallySimulator.API", "DakarRallySimulator.API\DakarRallySimulator.API.csproj", "{A2D34714-C5CC-421E-BA26-D579C6CEC5BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DakarRallySimulator.API", "DakarRallySimulator.API\DakarRallySimulator.API.csproj", "{A2D34714-C5CC-421E-BA26-D579C6CEC5BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DakarRallySimulator.Db.Models", "DakarRallySimulator.Db.Models\DakarRallySimulator.Db.Models.csproj", "{24A72DF7-5094-49FE-9FF3-394714A7B123}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DakarRallySimulator.Db", "DakarRallySimulator.Db\DakarRallySimulator.Db.csproj", "{2ECCB0F6-C7E1-4DFB-B950-C14577CE4725}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DakarRallySimulator.Common", "DakarRallySimulator.Common\DakarRallySimulator.Common.csproj", "{2268FC3E-108E-4155-AA58-E032F4B026FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{237AB9AB-924D-454D-8819-1BB2E1259A59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTO", "DTO\DTO.csproj", "{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{B17221C3-3823-468B-B956-6B74E8296C54}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogService", "LogService\LogService.csproj", "{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +29,33 @@ Global
 		{A2D34714-C5CC-421E-BA26-D579C6CEC5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2D34714-C5CC-421E-BA26-D579C6CEC5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2D34714-C5CC-421E-BA26-D579C6CEC5BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24A72DF7-5094-49FE-9FF3-394714A7B123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24A72DF7-5094-49FE-9FF3-394714A7B123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24A72DF7-5094-49FE-9FF3-394714A7B123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24A72DF7-5094-49FE-9FF3-394714A7B123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ECCB0F6-C7E1-4DFB-B950-C14577CE4725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ECCB0F6-C7E1-4DFB-B950-C14577CE4725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ECCB0F6-C7E1-4DFB-B950-C14577CE4725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ECCB0F6-C7E1-4DFB-B950-C14577CE4725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2268FC3E-108E-4155-AA58-E032F4B026FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2268FC3E-108E-4155-AA58-E032F4B026FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2268FC3E-108E-4155-AA58-E032F4B026FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2268FC3E-108E-4155-AA58-E032F4B026FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A43B935D-43D2-4ACB-B505-5CBD8C5D0E8D} = {237AB9AB-924D-454D-8819-1BB2E1259A59}
+		{DFFB2DD0-82D3-4E19-8377-50A3C371DAD6} = {B17221C3-3823-468B-B956-6B74E8296C54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {74578B4F-6385-4DB7-8D85-1EC9C4C2E4A5}
