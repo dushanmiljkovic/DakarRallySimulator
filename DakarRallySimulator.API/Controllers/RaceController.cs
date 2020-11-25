@@ -1,4 +1,5 @@
 ﻿using DakarRallySimulator.API.Models;
+using DakarRallySimulator.API.Models.BindingModel;
 using DakarRallySimulator.API.Models.Requests;
 using DakarRallySimulator.API.Services;
 using DakarRallySimulator.Db;
@@ -24,27 +25,20 @@ namespace DakarRallySimulator.API.Controllers
         }
 
         [HttpPost("create-race/{year}")]
-        public async Task<IActionResult> CreateRace([FromRoute]int year)
-        { 
-            if (year < DateTime.UtcNow.Year)
-            {
-                return BadRequest();
-            }
+        public async Task<IActionResult> CreateRace([FromRoute] int year)
+        {
+            if (year < DateTime.UtcNow.Year) { return BadRequest(); }
 
             var result = await raceService.CreateRace(year);
-            if(!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
+            if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
             return Ok();
         }
 
         [HttpPost("start-race/{raceId}")]
-        public async Task<IActionResult> StartRace([FromRoute]int raceId)
-        {
-
-            if (raceId < 0)
-            {
-                return BadRequest();
-            }
+        public async Task<IActionResult> StartRace([FromRoute] int raceId)
+        { 
+            if (raceId < 0) { return BadRequest(); }
 
             var result = await raceService.StartRace(raceId);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
@@ -56,16 +50,10 @@ namespace DakarRallySimulator.API.Controllers
         public async Task<IActionResult> AddVehicle(CreateVehicleRequestModel createVehicleRequestModel)
         {
 
-            if (createVehicleRequestModel.RaceId < 0)
-            {
-                return BadRequest();
-            }
+            if (createVehicleRequestModel.RaceId < 0) { return BadRequest(); }
 
             var vehicleDto = VehicleFactory.CreateVehicle(createVehicleRequestModel);
-            if (vehicleDto == null)
-            {
-                return BadRequest();
-            }
+            if (vehicleDto == null) { return BadRequest(); }
 
             var result = await raceService.AddVehicle(vehicleDto);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
@@ -76,21 +64,11 @@ namespace DakarRallySimulator.API.Controllers
         [HttpPatch("update-vehicle")]
         public async Task<IActionResult> UpdateVehicle(CreateVehicleRequestModel createVehicleRequestModel)
         {
-            if (createVehicleRequestModel.VehicleId < 0)
-            {
-                return BadRequest();
-            }
-
-            if (createVehicleRequestModel.RaceId < 0)
-            {
-                return BadRequest();
-            }
+            if (createVehicleRequestModel.VehicleId < 0) { return BadRequest(); } 
+            if (createVehicleRequestModel.RaceId < 0) { return BadRequest(); }
 
             var vehicleDto = VehicleFactory.CreateVehicle(createVehicleRequestModel);
-            if (vehicleDto == null)
-            {
-                return BadRequest();
-            }
+            if (vehicleDto == null) { return BadRequest(); }
 
             var result = await raceService.UpdateVehicle(vehicleDto);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
@@ -99,13 +77,10 @@ namespace DakarRallySimulator.API.Controllers
         }
 
         [HttpDelete("remove-vehicle/{vehicleId}")]
-        public async Task<IActionResult> RemoveVehicle([FromRoute]int vehicleId)
+        public async Task<IActionResult> RemoveVehicle([FromRoute] int vehicleId)
         {
-            if (vehicleId < 0)
-            {
-                return BadRequest();
-            }
-             
+            if (vehicleId < 0) { return BadRequest(); }
+
             var result = await raceService.RemoveVehicle(vehicleId);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
@@ -115,60 +90,69 @@ namespace DakarRallySimulator.API.Controllers
         [HttpGet("get-leaderboard")]
         public async Task<IActionResult> GetLeaderboard()
         {
-            
             var result = await raceService.GetLeaderboard();
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
-            return Ok(result.Result);
+            var bindingModel = result.Result.Any()
+                                ? result.Result.Select(p => ModelFactory.CreateLeaderboardBindingModel(p)).ToList()
+                                : new List<LeaderboardBindingModel>();
+            return Ok(bindingModel);
         }
 
         [HttpGet("get-leaderboard/{vehicleType}")]
-        public async Task<IActionResult> GetLeaderboard([FromRoute]VehicleType vehicleType)
+        public async Task<IActionResult> GetLeaderboard([FromRoute] VehicleType vehicleType)
         {
-
             var result = await raceService.GetLeaderboard(vehicleType);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
-            return Ok(result.Result);
+            var bindingModel = result.Result.Any()
+                    ? result.Result.Select(p => ModelFactory.CreateLeaderboardBindingModel(p)).ToList()
+                    : new List<LeaderboardBindingModel>();
+            return Ok(bindingModel);
         }
-         
+
         [HttpGet("get-vehicle-statistics/{vehicleId}")]
-        public async Task<IActionResult> GetVehicleStatistics([FromRoute]int vehicleId)
+        public async Task<IActionResult> GetVehicleStatistics([FromRoute] int vehicleId)
         {
-            if (vehicleId < 0)
-            {
-                return BadRequest();
-            }
+            if (vehicleId < 0) { return BadRequest(); }
 
             var result = await raceService.GetVehicleStatistics(vehicleId);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
-
-            return Ok(result.Result);
+             
+            return Ok(ModelFactory.CreateVehicleStatisticsdBindingModel(result.Result));
         }
 
         [HttpGet("find-vehicles")]
         public async Task<IActionResult> FindVehicle(string teamName, string model, DateTime? manufacturingDate, bool? isDNF, double? millage, bool? sortOrder)
         {
 
-            var result = await raceService.FindVehicles(teamName, model,manufacturingDate,isDNF,millage,sortOrder);
+            var result = await raceService.FindVehicles(teamName, model, manufacturingDate, isDNF, millage, sortOrder);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
-            return Ok(result.Result);
+            var bindingModel = result.Result.Any()
+                   ? result.Result.Select(p => ModelFactory.CreateVehicleBindingModel(p)).ToList()
+                   : new List<VehicleBindingModel>();
+            return Ok(bindingModel);
         }
 
-        
+
         [HttpGet("get-race-status/{raceId}")]
         public async Task<IActionResult> GetRaceStatus([FromRoute] int raceId)
         {
-            if (raceId < 0)
-            {
-                return BadRequest();
-            }
+            if (raceId < 0) { return BadRequest(); }
 
             var result = await raceService.GetRaceStatus(raceId);
             if (!result.ResultInfo.IsOk) { return Conflict(result.ResultInfo.Error); }
 
-            return Ok(result.Result);
+            return Ok(new RaceStatusBindingModel()
+            {
+                RaceStatus = result.Result.raceStatus,
+                StillRacingCount = result.Result.stillRacingCount,
+                DnfCount = result.Result.dnfCount,
+                CarsCount = result.Result.carsCount,
+                MotoCount = result.Result.motoCount,
+                TruckCount = result.Result.truckCount
+            });
         }
     }
 }

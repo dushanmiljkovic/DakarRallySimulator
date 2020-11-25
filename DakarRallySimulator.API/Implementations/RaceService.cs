@@ -93,20 +93,14 @@ namespace DakarRallySimulator.API.Implementations
         {
             try
             {
-                //var race = context.Races.Where(x => x.Id == model.RaceId && x.Vehicles.Any(v => v.Id == model.Id)).Include(c => c.Vehicles).FirstOrDefault();
-                //if (race == null)
-                //{
-                //    return (ResultInfo.Fail(ErrorType.ValidationException, "Invalid RaceID or VehicleID"), default(bool));
-                //}
+ 
 
                 var vehicle = await context.Vehicles.FirstOrDefaultAsync(x => x.Id == model.Id && x.Race.Status == RaceStatus.Pennding);
                 if (vehicle == null)
                 {
                     return (ResultInfo.Fail(ErrorType.ValidationException, "Invalid VehicleID"), default(bool));
                 }
-
-                //var vehicleToUpdate = race.Vehicles.Single(x => x.Id == model.Id);
-
+                 
                 vehicle.ManufacturingDate = model.ManufacturingDate;
                 vehicle.Model = model.Model;
                 vehicle.TeamName = model.TeamName;
@@ -186,7 +180,7 @@ namespace DakarRallySimulator.API.Implementations
         {
             try
             {
-                var race = context.Races.FirstOrDefault(x => x.Id == raceId);
+                var race = context.Races.Include(p => p.Vehicles).FirstOrDefault(x => x.Id == raceId);
                 if (race == null)
                 {
                     return (ResultInfo.Fail(ErrorType.ValidationException, "Invalid RaceID"), (default(RaceStatus), default(int), default(int), default(int), default(int), default(int)));
@@ -195,7 +189,7 @@ namespace DakarRallySimulator.API.Implementations
                 if (race.Status == RaceStatus.Started)
                 {
                     //update
-                    race.Vehicles = MovedVehicles(race.Vehicles.ToList(), DateTime.UtcNow, race.StartedAt.Value, race.Distance);
+                    race.Vehicles = MoveVehicles(race.Vehicles.ToList(), DateTime.UtcNow, race.StartedAt.Value, race.Distance);
 
                     if (IsRaceDone(race.Vehicles.ToList()))
                     {
@@ -300,6 +294,7 @@ namespace DakarRallySimulator.API.Implementations
                 {
                     Millage = vehicle.Millage,
                     NumberOfLightMalfunction = vehicle.NumberOfLightMalfunction,
+                    ModifiedAt = vehicle.ModifiedAt,
                     IsDNF = vehicle.IsDNF,
                     FinishedAt = vehicle.FinishedAt
                 };
@@ -317,7 +312,7 @@ namespace DakarRallySimulator.API.Implementations
         {
             try
             {
-                var race = context.Races.SingleOrDefault(x => x.Status == RaceStatus.Started);
+                var race = context.Races.Include(p => p.Vehicles).SingleOrDefault(x => x.Status == RaceStatus.Started);
                 if (race == null)
                 {
                     return (ResultInfo.Fail(ErrorType.DomainException, "No one Racing ATM"), default(List<VehicleDTO>));
@@ -325,7 +320,7 @@ namespace DakarRallySimulator.API.Implementations
 
                 // Update All Vhiacles  
                 //update
-                race.Vehicles = MovedVehicles(race.Vehicles.ToList(), DateTime.UtcNow, race.StartedAt.Value, race.Distance);
+                race.Vehicles = MoveVehicles(race.Vehicles.ToList(), DateTime.UtcNow, race.StartedAt.Value, race.Distance);
 
                 if (IsRaceDone(race.Vehicles.ToList()))
                 {
@@ -351,7 +346,9 @@ namespace DakarRallySimulator.API.Implementations
                     Millage = x.Millage,
                     Position = x.Position,
                     TeamName = x.TeamName,
-                    Model = x.Model
+                    Model = x.Model,
+                    IsDNF = x.IsDNF
+                    
                 }).OrderBy(y=> y.Position).ToList();
 
                 return (ResultInfo.Ok(), result);
@@ -367,7 +364,7 @@ namespace DakarRallySimulator.API.Implementations
         private bool HasRaceAlreadyFinished => context.Races.Any(x => x.Status == RaceStatus.Over);
 
         // Race Must Be Started 
-        private IList<Vehicle> MovedVehicles(IList<Vehicle> vehicless, DateTime momentSized, DateTime raceStartedAt, int raceDistance)
+        private IList<Vehicle> MoveVehicles(IList<Vehicle> vehicless, DateTime momentSized, DateTime raceStartedAt, int raceDistance)
         { 
             var vehicles = vehicless.ToList();
             // Move vehicles 
@@ -457,7 +454,8 @@ namespace DakarRallySimulator.API.Implementations
 
         private IList<Vehicle> OrderRanksByTime(IList<Vehicle> vehicless)
         {
-            var sortedList = vehicless.OrderBy(o => o.FinishedAt).ToList();
+
+            var sortedList = vehicless.OrderBy(o => o.FinishedAt ?? o.ModifiedAt).ToList();
             sortedList.ForEach(x => x.Position = vehicless.IndexOf(x));
             return sortedList;
         }
